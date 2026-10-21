@@ -41,6 +41,8 @@ class HazaragiIME : InputMethodService() {
     private var lang = "hazaragi"            // زبان پیش‌فرض: هزارگی
     private var mode = Mode.KEYS
     private var shift = false
+    private var caps = false
+    private var lastShiftTap = 0L
     private var harakat = 0
 
     private var root: LinearLayout? = null
@@ -62,7 +64,7 @@ class HazaragiIME : InputMethodService() {
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
-        if (!restarting) { lang = "hazaragi"; mode = Mode.KEYS; shift = false; harakat = 0 }
+        if (!restarting) { lang = "hazaragi"; mode = Mode.KEYS; shift = false; caps = false; harakat = 0 }
         if (root != null) rebuild()
     }
 
@@ -127,12 +129,12 @@ class HazaragiIME : InputMethodService() {
             val last = i == lay.rows.size - 1
             val r = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL
-                layoutDirection = if (lay.rtl) View.LAYOUT_DIRECTION_RTL else View.LAYOUT_DIRECTION_LTR
+                layoutDirection = View.LAYOUT_DIRECTION_LTR   // ترتیب کلیدها در فایل JSON همان ترتیب دیداری چپ‌به‌راست است
             }
-            // ردیف راست‌به‌چپ: اولین فرزند سمت راست است (حذف راست، شیفت چپ)
-            if (last && lay.side) r.addView(if (lay.rtl) backKey(t) else leftKey(t, lay))
+            // مثل کیبورد سامسونگ: شیفت سمت چپ، حذف سمت راست
+            if (last && lay.side) r.addView(leftKey(t, lay))
             row.forEach { r.addView(letterKey(it, t, lay, isNum)) }
-            if (last && lay.side) r.addView(if (lay.rtl) leftKey(t, lay) else backKey(t))
+            if (last && lay.side) r.addView(backKey(t))
             col.addView(r, LinearLayout.LayoutParams(-1, if (isNum) rowH() * 8 / 10 else rowH()))
         }
         col.addView(bottomRow(t, lay), LinearLayout.LayoutParams(-1, rowH()))
@@ -159,7 +161,7 @@ class HazaragiIME : InputMethodService() {
                     tv.textSize = if (harakat == 0) 22f else 15f
                     tv.setTextColor(if (harakat == 0) t.border else intArrayOf(0, t.v1, t.v2, t.v3)[harakat])
                 }
-                else -> { tv.text = "⇧"; tv.setTextColor(if (shift) t.v1 else t.border) }
+                else -> { tv.text = if (caps) "⇪" else "⇧"; tv.setTextColor(if (caps) t.v2 else if (shift) t.v1 else t.border) }
             }
         }
         paint(); sh.addView(tv)
@@ -168,7 +170,14 @@ class HazaragiIME : InputMethodService() {
             when {
                 mode == Mode.SYM -> { symPage = 1 - symPage; fillContent() }
                 rtlKeys -> { harakat = (harakat + 1) % 4; paint() }
-                else -> { shift = !shift; fillContent() }
+                else -> {
+                    val now = android.os.SystemClock.uptimeMillis()
+                    if (shift && !caps && now - lastShiftTap < 400) caps = true
+                    else if (shift) { shift = false; caps = false }
+                    else { shift = true; caps = false }
+                    lastShiftTap = now
+                    fillContent()
+                }
             }
         }
         return sh
@@ -194,7 +203,7 @@ class HazaragiIME : InputMethodService() {
         gl.setOnClickListener {
             feedback(it)
             val order = listOf("hazaragi", "fa", "en", "ar")
-            lang = order[(order.indexOf(lang) + 1) % order.size]; mode = Mode.KEYS; shift = false; harakat = 0
+            lang = order[(order.indexOf(lang) + 1) % order.size]; mode = Mode.KEYS; shift = false; caps = false; harakat = 0
             rebuild()
         }
         r.addView(gl)
@@ -205,6 +214,12 @@ class HazaragiIME : InputMethodService() {
         cm.setOnClickListener { feedback(it); commit(comma) }
         r.addView(cm)
 
+        val sp = cell(if (rtlKeys) 3.4f else 4.5f, t)
+        if (t.useImages) sp.setBackgroundResource(R.drawable.hk_space)
+        else sp.addView(TextView(this).apply { text = lay.name; textSize = 14f; setTextColor(t.text); gravity = Gravity.CENTER })
+        sp.setOnClickListener { feedback(it); commit(" ") }
+        r.addView(sp)
+
         // کلید کشیده‌نویسی (تطویل): با نگه‌داشتن، «ـ» پشت‌سرهم اضافه می‌شود → سـ‌ـ‌ـلام
         if (rtlKeys) {
             val ks = cell(1.1f, t)
@@ -213,12 +228,6 @@ class HazaragiIME : InputMethodService() {
             attachRepeat(ks, handler) { commit("\u0640") }
             r.addView(ks)
         }
-
-        val sp = cell(if (rtlKeys) 3.0f else 4.1f, t)
-        if (t.useImages) sp.setBackgroundResource(R.drawable.hk_space)
-        else sp.addView(TextView(this).apply { text = lay.name; textSize = 14f; setTextColor(t.text); gravity = Gravity.CENTER })
-        sp.setOnClickListener { feedback(it); commit(" ") }
-        r.addView(sp)
 
         val pd = cell(0.9f, t)
         pd.addView(TextView(this).apply { text = "."; textSize = 24f; setTextColor(t.text); gravity = Gravity.CENTER })
@@ -239,25 +248,25 @@ class HazaragiIME : InputMethodService() {
         }
         val c = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER }
         w.addView(c, FrameLayout.LayoutParams(-1, -1))
-        val label = if (shift && !lay.rtl) k.label.uppercase() else k.label
+        val label = if (shift && !lay.rtl) k.label.uppercase(java.util.Locale.ENGLISH) else k.label
         c.addView(TextView(this).apply {
             text = label; textSize = if (isNum) 19f else 23f; setTextColor(t.text); gravity = Gravity.CENTER
             typeface = Typeface.DEFAULT_BOLD
         })
-        if (k.variants.isNotEmpty()) {
+        if (k.variants.isNotEmpty() && !isNum) {
             val cols = intArrayOf(t.v1, t.v2, t.v3)
             val sb = SpannableStringBuilder()
-            k.variants.forEachIndexed { i, v ->
+            marks.drop(1).forEachIndexed { i, m ->
                 val st = sb.length
-                sb.append(v)
-                sb.setSpan(ForegroundColorSpan(cols[i % 3]), st, sb.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                if (i < k.variants.size - 1) sb.append(" ")
+                sb.append("\u0640").append(m)
+                sb.setSpan(ForegroundColorSpan(cols[i]), st, sb.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                if (i < 2) sb.append("  ")
             }
-            c.addView(TextView(this).apply { text = sb; textSize = 12f; gravity = Gravity.CENTER; maxLines = 1 })
+            c.addView(TextView(this).apply { text = sb; textSize = 14f; gravity = Gravity.CENTER; maxLines = 1; typeface = Typeface.DEFAULT_BOLD })
         }
-        if (k.extras.isNotEmpty()) {
+        if (k.extras.isNotEmpty() && !isNum) {
             // نشانه‌ی حرف پنهان (مثل ض روی ص) در گوشه‌ی کلید؛ با نگه‌داشتن باز می‌شود
-            w.addView(TextView(this).apply { text = k.extras[0]; textSize = 10f; setTextColor(t.v2) },
+            w.addView(TextView(this).apply { text = k.extras[0]; textSize = 11f; setTextColor(t.v2) },
                 FrameLayout.LayoutParams(-2, -2, Gravity.TOP or Gravity.LEFT).apply { setMargins(dp(4), dp(1), 0, 0) })
         }
         var longPressed = false
@@ -280,7 +289,7 @@ class HazaragiIME : InputMethodService() {
                         feedback(v)
                         val s = if (lay.rtl && mode == Mode.KEYS && !isNum) label + marks[harakat] else label
                         commit(s)
-                        if (shift && !lay.rtl) { shift = false; fillContent() }
+                        if (shift && !caps && !lay.rtl) { shift = false; fillContent() }
                     }
                 }
                 MotionEvent.ACTION_CANCEL -> { v.scaleX = 1f; v.scaleY = 1f; v.alpha = 1f; handler.removeCallbacks(lp) }
@@ -330,7 +339,7 @@ class HazaragiIME : InputMethodService() {
             }
             setOnClickListener { act(it) }
         }
-        fun pick(l: String) { lang = l; mode = Mode.KEYS; shift = false; harakat = 0; rebuild() }
+        fun pick(l: String) { lang = l; mode = Mode.KEYS; shift = false; caps = false; harakat = 0; rebuild() }
         bar.addView(chip("⚙\nتنظیمات", 1.2f, false) { openSettings() }.apply { textSize = 11f })
         bar.addView(chip("🌐 Hazaragi ▾", 2.1f, lang == "hazaragi") { pick("hazaragi") })
         bar.addView(chip("فارسی 🇮🇷", 1.5f, lang == "fa") { pick("fa") })

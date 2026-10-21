@@ -6,59 +6,10 @@
  "rows": [
   [
    {
-    "label": "۰",
+    "label": "۱",
     "variants": [],
     "extras": [
-     "0"
-    ]
-   },
-   {
-    "label": "۹",
-    "variants": [],
-    "extras": [
-     "9"
-    ]
-   },
-   {
-    "label": "۸",
-    "variants": [],
-    "extras": [
-     "8"
-    ]
-   },
-   {
-    "label": "۷",
-    "variants": [],
-    "extras": [
-     "7"
-    ]
-   },
-   {
-    "label": "۶",
-    "variants": [],
-    "extras": [
-     "6"
-    ]
-   },
-   {
-    "label": "۵",
-    "variants": [],
-    "extras": [
-     "5"
-    ]
-   },
-   {
-    "label": "۴",
-    "variants": [],
-    "extras": [
-     "4"
-    ]
-   },
-   {
-    "label": "۳",
-    "variants": [],
-    "extras": [
-     "3"
+     "1"
     ]
    },
    {
@@ -69,51 +20,65 @@
     ]
    },
    {
-    "label": "۱",
+    "label": "۳",
     "variants": [],
     "extras": [
-     "1"
+     "3"
+    ]
+   },
+   {
+    "label": "۴",
+    "variants": [],
+    "extras": [
+     "4"
+    ]
+   },
+   {
+    "label": "۵",
+    "variants": [],
+    "extras": [
+     "5"
+    ]
+   },
+   {
+    "label": "۶",
+    "variants": [],
+    "extras": [
+     "6"
+    ]
+   },
+   {
+    "label": "۷",
+    "variants": [],
+    "extras": [
+     "7"
+    ]
+   },
+   {
+    "label": "۸",
+    "variants": [],
+    "extras": [
+     "8"
+    ]
+   },
+   {
+    "label": "۹",
+    "variants": [],
+    "extras": [
+     "9"
+    ]
+   },
+   {
+    "label": "۰",
+    "variants": [],
+    "extras": [
+     "0"
     ]
    }
   ],
   [
    {
-    "label": "]",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "[",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": ">",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "<",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "_",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "/",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "=",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "÷",
+    "label": "+",
     "variants": [],
     "extras": []
    },
@@ -123,49 +88,49 @@
     "extras": []
    },
    {
-    "label": "+",
+    "label": "÷",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "=",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "/",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "_",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "<",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": ">",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "[",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "]",
     "variants": [],
     "extras": []
    }
   ],
   [
    {
-    "label": ")",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "(",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "*",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "&",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "^",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "%",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "﷼",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "#",
+    "label": "!",
     "variants": [],
     "extras": []
    },
@@ -175,34 +140,49 @@
     "extras": []
    },
    {
-    "label": "!",
+    "label": "#",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "﷼",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "%",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "^",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "&",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "*",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "(",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": ")",
     "variants": [],
     "extras": []
    }
   ],
   [
    {
-    "label": "؟",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "،",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "؛",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": ":",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "\"",
+    "label": "-",
     "variants": [],
     "extras": []
    },
@@ -212,10 +192,31 @@
     "extras": []
    },
    {
-    "label": "-",
+    "label": "\"",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": ":",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "؛",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "،",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "؟",
     "variants": [],
     "extras": []
    }
   ]
- ]
+ ],
+ "visual": true
 }

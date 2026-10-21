@@ -6,59 +6,10 @@
  "rows": [
   [
    {
-    "label": "۰",
+    "label": "۱",
     "variants": [],
     "extras": [
-     "0"
-    ]
-   },
-   {
-    "label": "۹",
-    "variants": [],
-    "extras": [
-     "9"
-    ]
-   },
-   {
-    "label": "۸",
-    "variants": [],
-    "extras": [
-     "8"
-    ]
-   },
-   {
-    "label": "۷",
-    "variants": [],
-    "extras": [
-     "7"
-    ]
-   },
-   {
-    "label": "۶",
-    "variants": [],
-    "extras": [
-     "6"
-    ]
-   },
-   {
-    "label": "۵",
-    "variants": [],
-    "extras": [
-     "5"
-    ]
-   },
-   {
-    "label": "۴",
-    "variants": [],
-    "extras": [
-     "4"
-    ]
-   },
-   {
-    "label": "۳",
-    "variants": [],
-    "extras": [
-     "3"
+     "1"
     ]
    },
    {
@@ -69,56 +20,98 @@
     ]
    },
    {
-    "label": "۱",
+    "label": "۳",
     "variants": [],
     "extras": [
-     "1"
+     "3"
+    ]
+   },
+   {
+    "label": "۴",
+    "variants": [],
+    "extras": [
+     "4"
+    ]
+   },
+   {
+    "label": "۵",
+    "variants": [],
+    "extras": [
+     "5"
+    ]
+   },
+   {
+    "label": "۶",
+    "variants": [],
+    "extras": [
+     "6"
+    ]
+   },
+   {
+    "label": "۷",
+    "variants": [],
+    "extras": [
+     "7"
+    ]
+   },
+   {
+    "label": "۸",
+    "variants": [],
+    "extras": [
+     "8"
+    ]
+   },
+   {
+    "label": "۹",
+    "variants": [],
+    "extras": [
+     "9"
+    ]
+   },
+   {
+    "label": "۰",
+    "variants": [],
+    "extras": [
+     "0"
     ]
    }
   ],
   [
    {
-    "label": "چ",
+    "label": "ص",
     "variants": [
-     "چَ",
-     "چِ",
-     "چُ"
+     "صَ",
+     "صِ",
+     "صُ"
+    ],
+    "extras": [
+     "ض"
+    ]
+   },
+   {
+    "label": "ث",
+    "variants": [
+     "ثَ",
+     "ثِ",
+     "ثُ"
     ],
     "extras": []
    },
    {
-    "label": "ج",
+    "label": "ق",
     "variants": [
-     "جَ",
-     "جِ",
-     "جُ"
+     "قَ",
+     "قِ",
+     "قُ"
     ],
     "extras": []
    },
    {
-    "label": "ح",
+    "label": "ف",
     "variants": [
-     "حَ",
-     "حِ",
-     "حُ"
-    ],
-    "extras": []
-   },
-   {
-    "label": "خ",
-    "variants": [
-     "خَ",
-     "خِ",
-     "خُ"
-    ],
-    "extras": []
-   },
-   {
-    "label": "ه",
-    "variants": [
-     "هَ",
-     "هِ",
-     "هُ"
+     "فَ",
+     "فِ",
+     "فُ"
     ],
     "extras": []
    },
@@ -134,107 +127,67 @@
     ]
    },
    {
-    "label": "ف",
+    "label": "ه",
     "variants": [
-     "فَ",
-     "فِ",
-     "فُ"
+     "هَ",
+     "هِ",
+     "هُ"
     ],
     "extras": []
    },
    {
-    "label": "ق",
+    "label": "خ",
     "variants": [
-     "قَ",
-     "قِ",
-     "قُ"
+     "خَ",
+     "خِ",
+     "خُ"
     ],
     "extras": []
    },
    {
-    "label": "ث",
+    "label": "ح",
     "variants": [
-     "ثَ",
-     "ثِ",
-     "ثُ"
+     "حَ",
+     "حِ",
+     "حُ"
     ],
     "extras": []
    },
    {
-    "label": "ص",
+    "label": "ج",
     "variants": [
-     "صَ",
-     "صِ",
-     "صُ"
+     "جَ",
+     "جِ",
+     "جُ"
     ],
-    "extras": [
-     "ض"
-    ]
+    "extras": []
+   },
+   {
+    "label": "چ",
+    "variants": [
+     "چَ",
+     "چِ",
+     "چُ"
+    ],
+    "extras": []
    }
   ],
   [
    {
-    "label": "پ",
+    "label": "ش",
     "variants": [
-     "پَ",
-     "پِ",
-     "پُ"
+     "شَ",
+     "شِ",
+     "شُ"
     ],
     "extras": []
    },
    {
-    "label": "م",
+    "label": "س",
     "variants": [
-     "مَ",
-     "مِ",
-     "مُ"
-    ],
-    "extras": []
-   },
-   {
-    "label": "ن",
-    "variants": [
-     "نَ",
-     "نِ",
-     "نُ"
-    ],
-    "extras": []
-   },
-   {
-    "label": "ت",
-    "variants": [
-     "تَ",
-     "تِ",
-     "تُ"
-    ],
-    "extras": []
-   },
-   {
-    "label": "ا",
-    "variants": [
-     "اَ",
-     "اِ",
-     "اُ"
-    ],
-    "extras": [
-     "آ"
-    ]
-   },
-   {
-    "label": "ل",
-    "variants": [
-     "لَ",
-     "لِ",
-     "لُ"
-    ],
-    "extras": []
-   },
-   {
-    "label": "ب",
-    "variants": [
-     "بَ",
-     "بِ",
-     "بُ"
+     "سَ",
+     "سِ",
+     "سُ"
     ],
     "extras": []
    },
@@ -251,73 +204,82 @@
     ]
    },
    {
-    "label": "س",
+    "label": "ب",
     "variants": [
-     "سَ",
-     "سِ",
-     "سُ"
+     "بَ",
+     "بِ",
+     "بُ"
     ],
     "extras": []
    },
    {
-    "label": "ش",
+    "label": "ل",
     "variants": [
-     "شَ",
-     "شِ",
-     "شُ"
+     "لَ",
+     "لِ",
+     "لُ"
+    ],
+    "extras": []
+   },
+   {
+    "label": "ا",
+    "variants": [
+     "اَ",
+     "اِ",
+     "اُ"
+    ],
+    "extras": [
+     "آ"
+    ]
+   },
+   {
+    "label": "ت",
+    "variants": [
+     "تَ",
+     "تِ",
+     "تُ"
+    ],
+    "extras": []
+   },
+   {
+    "label": "ن",
+    "variants": [
+     "نَ",
+     "نِ",
+     "نُ"
+    ],
+    "extras": []
+   },
+   {
+    "label": "م",
+    "variants": [
+     "مَ",
+     "مِ",
+     "مُ"
+    ],
+    "extras": []
+   },
+   {
+    "label": "پ",
+    "variants": [
+     "پَ",
+     "پِ",
+     "پُ"
     ],
     "extras": []
    }
   ],
   [
    {
-    "label": "گ",
+    "label": "ط",
     "variants": [
-     "گَ",
-     "گِ",
-     "گُ"
-    ],
-    "extras": []
-   },
-   {
-    "label": "ک",
-    "variants": [
-     "کَ",
-     "کِ",
-     "کُ"
-    ],
-    "extras": []
-   },
-   {
-    "label": "و",
-    "variants": [
-     "وَ",
-     "وِ",
-     "وُ"
+     "طَ",
+     "طِ",
+     "طُ"
     ],
     "extras": [
-     "ؤ"
+     "ظ"
     ]
-   },
-   {
-    "label": "د",
-    "variants": [
-     "دَ",
-     "دِ",
-     "دُ"
-    ],
-    "extras": [
-     "ذ"
-    ]
-   },
-   {
-    "label": "ر",
-    "variants": [
-     "رَ",
-     "رِ",
-     "رُ"
-    ],
-    "extras": []
    },
    {
     "label": "ز",
@@ -331,16 +293,55 @@
     ]
    },
    {
-    "label": "ط",
+    "label": "ر",
     "variants": [
-     "طَ",
-     "طِ",
-     "طُ"
+     "رَ",
+     "رِ",
+     "رُ"
+    ],
+    "extras": []
+   },
+   {
+    "label": "د",
+    "variants": [
+     "دَ",
+     "دِ",
+     "دُ"
     ],
     "extras": [
-     "ظ"
+     "ذ"
     ]
+   },
+   {
+    "label": "و",
+    "variants": [
+     "وَ",
+     "وِ",
+     "وُ"
+    ],
+    "extras": [
+     "ؤ"
+    ]
+   },
+   {
+    "label": "ک",
+    "variants": [
+     "کَ",
+     "کِ",
+     "کُ"
+    ],
+    "extras": []
+   },
+   {
+    "label": "گ",
+    "variants": [
+     "گَ",
+     "گِ",
+     "گُ"
+    ],
+    "extras": []
    }
   ]
- ]
+ ],
+ "visual": true
 }

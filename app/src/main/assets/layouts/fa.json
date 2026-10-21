@@ -6,59 +6,10 @@
  "rows": [
   [
    {
-    "label": "۰",
+    "label": "۱",
     "variants": [],
     "extras": [
-     "0"
-    ]
-   },
-   {
-    "label": "۹",
-    "variants": [],
-    "extras": [
-     "9"
-    ]
-   },
-   {
-    "label": "۸",
-    "variants": [],
-    "extras": [
-     "8"
-    ]
-   },
-   {
-    "label": "۷",
-    "variants": [],
-    "extras": [
-     "7"
-    ]
-   },
-   {
-    "label": "۶",
-    "variants": [],
-    "extras": [
-     "6"
-    ]
-   },
-   {
-    "label": "۵",
-    "variants": [],
-    "extras": [
-     "5"
-    ]
-   },
-   {
-    "label": "۴",
-    "variants": [],
-    "extras": [
-     "4"
-    ]
-   },
-   {
-    "label": "۳",
-    "variants": [],
-    "extras": [
-     "3"
+     "1"
     ]
    },
    {
@@ -69,36 +20,82 @@
     ]
    },
    {
-    "label": "۱",
+    "label": "۳",
     "variants": [],
     "extras": [
-     "1"
+     "3"
+    ]
+   },
+   {
+    "label": "۴",
+    "variants": [],
+    "extras": [
+     "4"
+    ]
+   },
+   {
+    "label": "۵",
+    "variants": [],
+    "extras": [
+     "5"
+    ]
+   },
+   {
+    "label": "۶",
+    "variants": [],
+    "extras": [
+     "6"
+    ]
+   },
+   {
+    "label": "۷",
+    "variants": [],
+    "extras": [
+     "7"
+    ]
+   },
+   {
+    "label": "۸",
+    "variants": [],
+    "extras": [
+     "8"
+    ]
+   },
+   {
+    "label": "۹",
+    "variants": [],
+    "extras": [
+     "9"
+    ]
+   },
+   {
+    "label": "۰",
+    "variants": [],
+    "extras": [
+     "0"
     ]
    }
   ],
   [
    {
-    "label": "چ",
+    "label": "ص",
+    "variants": [],
+    "extras": [
+     "ض"
+    ]
+   },
+   {
+    "label": "ث",
     "variants": [],
     "extras": []
    },
    {
-    "label": "ج",
+    "label": "ق",
     "variants": [],
     "extras": []
    },
    {
-    "label": "ح",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "خ",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "ه",
+    "label": "ف",
     "variants": [],
     "extras": []
    },
@@ -110,63 +107,39 @@
     ]
    },
    {
-    "label": "ف",
+    "label": "ه",
     "variants": [],
     "extras": []
    },
    {
-    "label": "ق",
+    "label": "خ",
     "variants": [],
     "extras": []
    },
    {
-    "label": "ث",
+    "label": "ح",
     "variants": [],
     "extras": []
    },
    {
-    "label": "ص",
+    "label": "ج",
     "variants": [],
-    "extras": [
-     "ض"
-    ]
+    "extras": []
+   },
+   {
+    "label": "چ",
+    "variants": [],
+    "extras": []
    }
   ],
   [
    {
-    "label": "پ",
+    "label": "ش",
     "variants": [],
     "extras": []
    },
    {
-    "label": "م",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "ن",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "ت",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "ا",
-    "variants": [],
-    "extras": [
-     "آ"
-    ]
-   },
-   {
-    "label": "ل",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "ب",
+    "label": "س",
     "variants": [],
     "extras": []
    },
@@ -179,45 +152,50 @@
     ]
    },
    {
-    "label": "س",
+    "label": "ب",
     "variants": [],
     "extras": []
    },
    {
-    "label": "ش",
+    "label": "ل",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "ا",
+    "variants": [],
+    "extras": [
+     "آ"
+    ]
+   },
+   {
+    "label": "ت",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "ن",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "م",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "پ",
     "variants": [],
     "extras": []
    }
   ],
   [
    {
-    "label": "گ",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "ک",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "و",
+    "label": "ط",
     "variants": [],
     "extras": [
-     "ؤ"
+     "ظ"
     ]
-   },
-   {
-    "label": "د",
-    "variants": [],
-    "extras": [
-     "ذ"
-    ]
-   },
-   {
-    "label": "ر",
-    "variants": [],
-    "extras": []
    },
    {
     "label": "ز",
@@ -227,12 +205,35 @@
     ]
    },
    {
-    "label": "ط",
+    "label": "ر",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "د",
     "variants": [],
     "extras": [
-     "ظ"
+     "ذ"
     ]
+   },
+   {
+    "label": "و",
+    "variants": [],
+    "extras": [
+     "ؤ"
+    ]
+   },
+   {
+    "label": "ک",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "گ",
+    "variants": [],
+    "extras": []
    }
   ]
- ]
+ ],
+ "visual": true
 }

@@ -6,42 +6,7 @@
  "rows": [
   [
    {
-    "label": "0",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "9",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "8",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "7",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "6",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "5",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "4",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "3",
+    "label": "1",
     "variants": [],
     "extras": []
    },
@@ -51,49 +16,49 @@
     "extras": []
    },
    {
-    "label": "1",
+    "label": "3",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "4",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "5",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "6",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "7",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "8",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "9",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "0",
     "variants": [],
     "extras": []
    }
   ],
   [
    {
-    "label": "}",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "{",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "∆",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "¶",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "π",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "√",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "•",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "|",
+    "label": "~",
     "variants": [],
     "extras": []
    },
@@ -103,49 +68,49 @@
     "extras": []
    },
    {
-    "label": "~",
+    "label": "|",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "•",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "√",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "π",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "¶",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "∆",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "{",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "}",
     "variants": [],
     "extras": []
    }
   ],
   [
    {
-    "label": "»",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "«",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "®",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "©",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "°",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "$",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "¥",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "€",
+    "label": "£",
     "variants": [],
     "extras": []
    },
@@ -155,34 +120,49 @@
     "extras": []
    },
    {
-    "label": "£",
+    "label": "€",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "¥",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "$",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "°",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "©",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "®",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "«",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "»",
     "variants": [],
     "extras": []
    }
   ],
   [
    {
-    "label": "’",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "‘",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "”",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "“",
-    "variants": [],
-    "extras": []
-   },
-   {
-    "label": "—",
+    "label": "…",
     "variants": [],
     "extras": []
    },
@@ -192,10 +172,31 @@
     "extras": []
    },
    {
-    "label": "…",
+    "label": "—",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "“",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "”",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "‘",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "’",
     "variants": [],
     "extras": []
    }
   ]
- ]
+ ],
+ "visual": true
 }
