@@ -1,6 +1,7 @@
 package af.hazaragi.keyboard
 
 import android.content.ClipDescription
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -14,6 +15,7 @@ import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.InputType
 import android.text.style.ForegroundColorSpan
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
@@ -23,17 +25,20 @@ import android.view.inputmethod.EditorInfo
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.PopupWindow
+import android.widget.ScrollView
+import android.text.TextUtils
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.core.view.inputmethod.EditorInfoCompat
+import androidx.core.widget.TextViewCompat
 import androidx.core.view.inputmethod.InputConnectionCompat
 import androidx.core.view.inputmethod.InputContentInfoCompat
 import java.io.File
 
 class HazaragiIME : InputMethodService() {
 
-    private enum class Mode { KEYS, SYM, EMOJI, STICKER }
+    private enum class Mode { KEYS, SYM, EMOJI, STICKER, CLIP }
 
     private val handler = Handler(Looper.getMainLooper())
     private val langs = listOf("hazaragi", "fa", "en", "ar")
@@ -50,6 +55,113 @@ class HazaragiIME : InputMethodService() {
     private var header: Header? = null
 
     private var symPage = 0
+
+    // ---- کلیپ‌بورد: متن/لینک کپی‌شده هنگام تایپ بالای کیبورد می‌آید (فقط در حافظه، ذخیره نمی‌شود)
+    private val clipHistory = ArrayList<String>()
+    private var lastPasted: String? = null
+    private var clipBar: LinearLayout? = null
+    private var clipLabel: TextView? = null
+    private var cm: ClipboardManager? = null
+    private val clipListener = ClipboardManager.OnPrimaryClipChangedListener {
+        lastPasted = null; readClip(); refreshClipBar()
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        cm = getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+        try { cm?.addPrimaryClipChangedListener(clipListener) } catch (_: Exception) {}
+    }
+
+    override fun onDestroy() {
+        try { cm?.removePrimaryClipChangedListener(clipListener) } catch (_: Exception) {}
+        super.onDestroy()
+    }
+
+    private fun readClip() {
+        val text = try {
+            cm?.primaryClip?.takeIf { it.itemCount > 0 }?.getItemAt(0)?.coerceToText(this)?.toString()
+        } catch (_: Exception) { null }
+        if (text.isNullOrBlank() || text.length > 20000) return
+        if (clipHistory.firstOrNull() == text) return
+        clipHistory.remove(text)
+        clipHistory.add(0, text)
+        while (clipHistory.size > 15) clipHistory.removeAt(clipHistory.size - 1)
+    }
+
+    private fun isSecureField(): Boolean {
+        val it = currentInputEditorInfo?.inputType ?: 0
+        val v = it and InputType.TYPE_MASK_VARIATION
+        val cls = it and InputType.TYPE_MASK_CLASS
+        return (cls == InputType.TYPE_CLASS_TEXT && (v == InputType.TYPE_TEXT_VARIATION_PASSWORD ||
+            v == InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD || v == InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD)) ||
+            (cls == InputType.TYPE_CLASS_NUMBER && v == InputType.TYPE_NUMBER_VARIATION_PASSWORD)
+    }
+
+    private fun refreshClipBar() {
+        val bar = clipBar ?: return
+        val cur = clipHistory.firstOrNull()
+        val show = cur != null && cur != lastPasted && !isSecureField() && mode != Mode.CLIP
+        bar.visibility = if (show) View.VISIBLE else View.GONE
+        if (show && cur != null) {
+            val link = cur.startsWith("http", true) || cur.startsWith("www.", true)
+            clipLabel?.text = (if (link) "🔗  " else "📋  ") + cur.replace("\n", " ")
+        }
+    }
+
+    private fun makeClipBar(t: KbTheme): View {
+        val b = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
+            layoutDirection = View.LAYOUT_DIRECTION_RTL
+            background = keyBg(t); setPadding(dp(10), 0, dp(4), 0); visibility = View.GONE
+        }
+        val lb = TextView(this).apply {
+            textSize = 14f; setTextColor(t.text); maxLines = 1; ellipsize = TextUtils.TruncateAt.END
+        }
+        clipLabel = lb
+        b.addView(lb, LinearLayout.LayoutParams(0, -2, 1f))
+        b.addView(TextView(this).apply {
+            text = "✕"; textSize = 16f; setTextColor(t.v1); setPadding(dp(12), dp(6), dp(12), dp(6))
+            setOnClickListener { lastPasted = clipHistory.firstOrNull(); refreshClipBar() }
+        })
+        // یک ضربه روی نوار = چسباندن
+        b.setOnClickListener { clipHistory.firstOrNull()?.let { commit(it); lastPasted = it; refreshClipBar() } }
+        clipBar = b
+        return b
+    }
+
+    private fun clipPanel(t: KbTheme, h: Int): View {
+        val col = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL; layoutDirection = View.LAYOUT_DIRECTION_RTL
+            setPadding(dp(6), dp(4), dp(6), dp(4)); layoutParams = FrameLayout.LayoutParams(-1, h)
+        }
+        fun chip(txt: String, act: () -> Unit) = TextView(this).apply {
+            text = txt; textSize = 14f; setTextColor(t.v1); setPadding(dp(12), dp(8), dp(12), dp(8))
+            setOnClickListener { act() }
+        }
+        val top = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+        top.addView(chip("ابج") { setMode(Mode.KEYS); refreshClipBar() })
+        top.addView(TextView(this).apply {
+            text = "کلیپ‌بورد"; textSize = 15f; setTextColor(t.text); gravity = Gravity.CENTER; typeface = Typeface.DEFAULT_BOLD
+        }, LinearLayout.LayoutParams(0, -2, 1f))
+        top.addView(chip("پاک‌کردن") { clipHistory.clear(); lastPasted = null; fillContent() })
+        col.addView(top)
+        val list = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        if (clipHistory.isEmpty()) {
+            list.addView(TextView(this).apply {
+                text = "چیزی کپی نشده است"; textSize = 14f; setTextColor(t.text); gravity = Gravity.CENTER; setPadding(0, dp(24), 0, 0)
+            })
+        }
+        clipHistory.forEach { item ->
+            list.addView(TextView(this).apply {
+                text = item; maxLines = 2; ellipsize = TextUtils.TruncateAt.END; textSize = 14f; setTextColor(t.text)
+                background = keyBg(t); setPadding(dp(10), dp(8), dp(10), dp(8))
+                layoutParams = LinearLayout.LayoutParams(-1, -2).apply { setMargins(0, dp(2), 0, dp(2)) }
+                setOnClickListener { commit(item); lastPasted = item; setMode(Mode.KEYS); refreshClipBar() }
+            })
+        }
+        col.addView(ScrollView(this).apply { addView(list) }, LinearLayout.LayoutParams(-1, 0, 1f))
+        return col
+    }
     private fun rowH() = dp(Prefs.height(this))
     private fun keysHeight() = rowH() * 48 / 10 + dp(8)
 
@@ -64,6 +176,7 @@ class HazaragiIME : InputMethodService() {
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
+        readClip()
         if (!restarting) { lang = "hazaragi"; mode = Mode.KEYS; shift = false; caps = false; harakat = 0 }
         if (root != null) rebuild()
     }
@@ -85,16 +198,18 @@ class HazaragiIME : InputMethodService() {
         else PlainHeader(this, t, handler, { setMode(Mode.EMOJI) }, { backspace() }, { enter() })
         header = h
         r.addView(h.view, LinearLayout.LayoutParams(-1, -2))
+        r.addView(makeClipBar(t), LinearLayout.LayoutParams(-1, dp(36)).apply { setMargins(dp(6), dp(3), dp(6), dp(1)) })
         val c = FrameLayout(this)
         content = c
         r.addView(c, LinearLayout.LayoutParams(-1, -2))
         fillContent()
+        refreshClipBar()
         r.addView(langBar(t), LinearLayout.LayoutParams(-1, dp(46)))
         if (portrait) r.addView(makeFooter(this, t, img) { commit(it) }, LinearLayout.LayoutParams(-1, -2))
         updatePreview()
     }
 
-    private fun setMode(m: Mode) { mode = m; fillContent() }
+    private fun setMode(m: Mode) { mode = m; fillContent(); refreshClipBar() }
 
     private fun fillContent() {
         val c = content ?: return
@@ -103,14 +218,16 @@ class HazaragiIME : InputMethodService() {
         c.removeAllViews()
         when (mode) {
             Mode.KEYS, Mode.SYM -> c.addView(buildKeys(t))
+            Mode.CLIP -> c.addView(clipPanel(t, panelH))
             Mode.EMOJI -> c.addView(emojiPanel(this, t, panelH, { commit(it) }, { setMode(Mode.KEYS) }))
             Mode.STICKER -> c.addView(stickerPanel(this, t, panelH, { sendSticker(it) }, { setMode(Mode.KEYS) }, { openSettings() }))
         }
     }
 
-    private fun keyBg(t: KbTheme) = GradientDrawable(
-        GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(t.keyTop, t.keyBottom)
-    ).apply { cornerRadius = dp(11).toFloat(); setStroke(dp(1), t.border) }
+    private fun keyBg(t: KbTheme): android.graphics.drawable.Drawable {
+        val fancy = t.useImages || t.id == "gold"
+        return KeyBg(t.keyTop, t.keyBottom, t.border, dp(11).toFloat(), dp(if (t.useImages) 2 else 1).toFloat(), fancy)
+    }
 
     private fun cell(w: Float, t: KbTheme) = LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER
@@ -250,19 +367,26 @@ class HazaragiIME : InputMethodService() {
         w.addView(c, FrameLayout.LayoutParams(-1, -1))
         val label = if (shift && !lay.rtl) k.label.uppercase(java.util.Locale.ENGLISH) else k.label
         c.addView(TextView(this).apply {
-            text = label; textSize = if (isNum) 19f else 23f; setTextColor(t.text); gravity = Gravity.CENTER
+            text = label; textSize = if (isNum) 19f else 21f; setTextColor(t.text); gravity = Gravity.CENTER
             typeface = Typeface.DEFAULT_BOLD
         })
         if (k.variants.isNotEmpty() && !isNum) {
             val cols = intArrayOf(t.v1, t.v2, t.v3)
             val sb = SpannableStringBuilder()
-            marks.drop(1).forEachIndexed { i, m ->
+            k.variants.forEachIndexed { i, v ->
                 val st = sb.length
-                sb.append("\u0640").append(m)
-                sb.setSpan(ForegroundColorSpan(cols[i]), st, sb.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                if (i < 2) sb.append("  ")
+                sb.append(v)
+                sb.setSpan(ForegroundColorSpan(cols[i % 3]), st, sb.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                if (i < k.variants.size - 1) sb.append(" ")
             }
-            c.addView(TextView(this).apply { text = sb; textSize = 14f; gravity = Gravity.CENTER; maxLines = 1; typeface = Typeface.DEFAULT_BOLD })
+            val tv = TextView(this).apply {
+                text = sb; maxLines = 1; gravity = Gravity.CENTER
+                typeface = Typeface.DEFAULT_BOLD
+                setPadding(dp(1), 0, dp(1), 0)
+                layoutParams = LinearLayout.LayoutParams(-1, -2)
+            }
+            TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(tv, 7, 13, 1, TypedValue.COMPLEX_UNIT_SP)
+            c.addView(tv)
         }
         if (k.extras.isNotEmpty() && !isNum) {
             // نشانه‌ی حرف پنهان (مثل ض روی ص) در گوشه‌ی کلید؛ با نگه‌داشتن باز می‌شود
@@ -351,6 +475,7 @@ class HazaragiIME : InputMethodService() {
                 "اعداد و نشانه‌ها" to { setMode(Mode.SYM) },
                 "ایموجی" to { setMode(Mode.EMOJI) },
                 "استیکر" to { setMode(Mode.STICKER) },
+                "کلیپ‌بورد" to { readClip(); setMode(Mode.CLIP) },
                 "تم بعدی" to { Prefs.setTheme(this, Themes.next(this).id); rebuild() }
             ))
         }.apply { textSize = 11f })
@@ -381,7 +506,10 @@ class HazaragiIME : InputMethodService() {
         if (Prefs.sound(this)) (getSystemService(Context.AUDIO_SERVICE) as AudioManager).playSoundEffect(AudioManager.FX_KEYPRESS_STANDARD)
     }
 
-    private fun commit(s: String) { currentInputConnection?.commitText(s, 1); updatePreview() }
+    private fun commit(s: String) {
+        currentInputConnection?.commitText(s, 1); updatePreview()
+        if (clipBar?.visibility == View.VISIBLE) { lastPasted = clipHistory.firstOrNull(); refreshClipBar() }
+    }
 
     private fun backspace() {
         val ic = currentInputConnection ?: return
