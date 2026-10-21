@@ -1,0 +1,141 @@
+{
+ "id": "ar",
+ "name": "العربية",
+ "rtl": true,
+ "rows": [
+  [
+   {
+    "label": "ض",
+    "variants": []
+   },
+   {
+    "label": "ص",
+    "variants": []
+   },
+   {
+    "label": "ث",
+    "variants": []
+   },
+   {
+    "label": "ق",
+    "variants": []
+   },
+   {
+    "label": "ف",
+    "variants": []
+   },
+   {
+    "label": "غ",
+    "variants": []
+   },
+   {
+    "label": "ع",
+    "variants": []
+   },
+   {
+    "label": "ه",
+    "variants": []
+   },
+   {
+    "label": "خ",
+    "variants": []
+   },
+   {
+    "label": "ح",
+    "variants": []
+   },
+   {
+    "label": "ج",
+    "variants": []
+   }
+  ],
+  [
+   {
+    "label": "ش",
+    "variants": []
+   },
+   {
+    "label": "س",
+    "variants": []
+   },
+   {
+    "label": "ي",
+    "variants": []
+   },
+   {
+    "label": "ب",
+    "variants": []
+   },
+   {
+    "label": "ل",
+    "variants": []
+   },
+   {
+    "label": "ا",
+    "variants": []
+   },
+   {
+    "label": "ت",
+    "variants": []
+   },
+   {
+    "label": "ن",
+    "variants": []
+   },
+   {
+    "label": "م",
+    "variants": []
+   },
+   {
+    "label": "ك",
+    "variants": []
+   },
+   {
+    "label": "ط",
+    "variants": []
+   }
+  ],
+  [
+   {
+    "label": "ئ",
+    "variants": []
+   },
+   {
+    "label": "ء",
+    "variants": []
+   },
+   {
+    "label": "ؤ",
+    "variants": []
+   },
+   {
+    "label": "ر",
+    "variants": []
+   },
+   {
+    "label": "ى",
+    "variants": []
+   },
+   {
+    "label": "ة",
+    "variants": []
+   },
+   {
+    "label": "و",
+    "variants": []
+   },
+   {
+    "label": "ز",
+    "variants": []
+   },
+   {
+    "label": "ظ",
+    "variants": []
+   },
+   {
+    "label": "ذ",
+    "variants": []
+   }
+  ]
+ ]
+}

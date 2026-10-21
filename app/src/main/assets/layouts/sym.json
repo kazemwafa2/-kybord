@@ -1,0 +1,153 @@
+{
+ "id": "sym",
+ "name": "اعداد",
+ "rtl": true,
+ "rows": [
+  [
+   {
+    "label": "۱",
+    "variants": [
+     "1"
+    ]
+   },
+   {
+    "label": "۲",
+    "variants": [
+     "2"
+    ]
+   },
+   {
+    "label": "۳",
+    "variants": [
+     "3"
+    ]
+   },
+   {
+    "label": "۴",
+    "variants": [
+     "4"
+    ]
+   },
+   {
+    "label": "۵",
+    "variants": [
+     "5"
+    ]
+   },
+   {
+    "label": "۶",
+    "variants": [
+     "6"
+    ]
+   },
+   {
+    "label": "۷",
+    "variants": [
+     "7"
+    ]
+   },
+   {
+    "label": "۸",
+    "variants": [
+     "8"
+    ]
+   },
+   {
+    "label": "۹",
+    "variants": [
+     "9"
+    ]
+   },
+   {
+    "label": "۰",
+    "variants": [
+     "0"
+    ]
+   }
+  ],
+  [
+   {
+    "label": "؟",
+    "variants": []
+   },
+   {
+    "label": "،",
+    "variants": []
+   },
+   {
+    "label": "؛",
+    "variants": []
+   },
+   {
+    "label": "!",
+    "variants": []
+   },
+   {
+    "label": ":",
+    "variants": []
+   },
+   {
+    "label": ".",
+    "variants": []
+   },
+   {
+    "label": "«",
+    "variants": []
+   },
+   {
+    "label": "»",
+    "variants": []
+   },
+   {
+    "label": "(",
+    "variants": []
+   },
+   {
+    "label": ")",
+    "variants": []
+   }
+  ],
+  [
+   {
+    "label": "-",
+    "variants": []
+   },
+   {
+    "label": "_",
+    "variants": []
+   },
+   {
+    "label": "/",
+    "variants": []
+   },
+   {
+    "label": "@",
+    "variants": []
+   },
+   {
+    "label": "#",
+    "variants": []
+   },
+   {
+    "label": "%",
+    "variants": []
+   },
+   {
+    "label": "&",
+    "variants": []
+   },
+   {
+    "label": "*",
+    "variants": []
+   },
+   {
+    "label": "+",
+    "variants": []
+   },
+   {
+    "label": "=",
+    "variants": []
+   }
+  ]
+ ]
+}
