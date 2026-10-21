@@ -12,7 +12,7 @@ object Prefs {
     fun sound(c: Context) = bool(c, "snd", false)
     fun anim(c: Context) = bool(c, "anim", true)
     fun headerImage(c: Context) = bool(c, "himg", true)
-    fun height(c: Context) = sp(c).getInt("height", 54)
+    fun height(c: Context) = sp(c).getInt("height", 44)
     fun setHeight(c: Context, v: Int) = sp(c).edit().putInt("height", v).apply()
     fun recents(c: Context): List<String> =
         (sp(c).getString("recent", "") ?: "").split(" ").filter { it.isNotEmpty() }

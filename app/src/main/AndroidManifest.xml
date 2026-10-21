@@ -3,7 +3,8 @@
     <application
         android:label="کیبورد هزارگی"
         android:icon="@drawable/ic_launcher"
-        android:allowBackup="false">
+        android:allowBackup="false"
+        android:supportsRtl="true">
 
         <service
             android:name=".HazaragiIME"

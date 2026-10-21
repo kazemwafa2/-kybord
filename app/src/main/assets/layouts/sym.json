@@ -1,152 +1,220 @@
 {
  "id": "sym",
- "name": "اعداد",
+ "name": "اعداد و نشانه‌ها",
  "rtl": true,
+ "side": true,
  "rows": [
   [
    {
-    "label": "۱",
-    "variants": [
-     "1"
-    ]
-   },
-   {
-    "label": "۲",
-    "variants": [
-     "2"
-    ]
-   },
-   {
-    "label": "۳",
-    "variants": [
-     "3"
-    ]
-   },
-   {
-    "label": "۴",
-    "variants": [
-     "4"
-    ]
-   },
-   {
-    "label": "۵",
-    "variants": [
-     "5"
-    ]
-   },
-   {
-    "label": "۶",
-    "variants": [
-     "6"
-    ]
-   },
-   {
-    "label": "۷",
-    "variants": [
-     "7"
-    ]
-   },
-   {
-    "label": "۸",
-    "variants": [
-     "8"
+    "label": "۰",
+    "variants": [],
+    "extras": [
+     "0"
     ]
    },
    {
     "label": "۹",
-    "variants": [
+    "variants": [],
+    "extras": [
      "9"
     ]
    },
    {
-    "label": "۰",
-    "variants": [
-     "0"
+    "label": "۸",
+    "variants": [],
+    "extras": [
+     "8"
     ]
+   },
+   {
+    "label": "۷",
+    "variants": [],
+    "extras": [
+     "7"
+    ]
+   },
+   {
+    "label": "۶",
+    "variants": [],
+    "extras": [
+     "6"
+    ]
+   },
+   {
+    "label": "۵",
+    "variants": [],
+    "extras": [
+     "5"
+    ]
+   },
+   {
+    "label": "۴",
+    "variants": [],
+    "extras": [
+     "4"
+    ]
+   },
+   {
+    "label": "۳",
+    "variants": [],
+    "extras": [
+     "3"
+    ]
+   },
+   {
+    "label": "۲",
+    "variants": [],
+    "extras": [
+     "2"
+    ]
+   },
+   {
+    "label": "۱",
+    "variants": [],
+    "extras": [
+     "1"
+    ]
+   }
+  ],
+  [
+   {
+    "label": "]",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "[",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": ">",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "<",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "_",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "/",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "=",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "÷",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "×",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "+",
+    "variants": [],
+    "extras": []
+   }
+  ],
+  [
+   {
+    "label": ")",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "(",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "*",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "&",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "^",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "%",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "﷼",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "#",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "@",
+    "variants": [],
+    "extras": []
+   },
+   {
+    "label": "!",
+    "variants": [],
+    "extras": []
    }
   ],
   [
    {
     "label": "؟",
-    "variants": []
+    "variants": [],
+    "extras": []
    },
    {
     "label": "،",
-    "variants": []
+    "variants": [],
+    "extras": []
    },
    {
     "label": "؛",
-    "variants": []
-   },
-   {
-    "label": "!",
-    "variants": []
+    "variants": [],
+    "extras": []
    },
    {
     "label": ":",
-    "variants": []
+    "variants": [],
+    "extras": []
    },
    {
-    "label": ".",
-    "variants": []
+    "label": "\"",
+    "variants": [],
+    "extras": []
    },
    {
-    "label": "«",
-    "variants": []
+    "label": "'",
+    "variants": [],
+    "extras": []
    },
-   {
-    "label": "»",
-    "variants": []
-   },
-   {
-    "label": "(",
-    "variants": []
-   },
-   {
-    "label": ")",
-    "variants": []
-   }
-  ],
-  [
    {
     "label": "-",
-    "variants": []
-   },
-   {
-    "label": "_",
-    "variants": []
-   },
-   {
-    "label": "/",
-    "variants": []
-   },
-   {
-    "label": "@",
-    "variants": []
-   },
-   {
-    "label": "#",
-    "variants": []
-   },
-   {
-    "label": "%",
-    "variants": []
-   },
-   {
-    "label": "&",
-    "variants": []
-   },
-   {
-    "label": "*",
-    "variants": []
-   },
-   {
-    "label": "+",
-    "variants": []
-   },
-   {
-    "label": "=",
-    "variants": []
+    "variants": [],
+    "extras": []
    }
   ]
  ]

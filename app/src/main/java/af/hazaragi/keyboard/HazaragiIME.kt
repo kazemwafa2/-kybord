@@ -47,7 +47,9 @@ class HazaragiIME : InputMethodService() {
     private var content: FrameLayout? = null
     private var header: Header? = null
 
+    private var symPage = 0
     private fun rowH() = dp(Prefs.height(this))
+    private fun keysHeight() = rowH() * 48 / 10 + dp(8)
 
     override fun onEvaluateFullscreenMode() = false
 
@@ -95,7 +97,7 @@ class HazaragiIME : InputMethodService() {
     private fun fillContent() {
         val c = content ?: return
         val t = Themes.current(this)
-        val panelH = rowH() * 4 + dp(8)
+        val panelH = keysHeight()
         c.removeAllViews()
         when (mode) {
             Mode.KEYS, Mode.SYM -> c.addView(buildKeys(t))
@@ -115,80 +117,113 @@ class HazaragiIME : InputMethodService() {
     }
 
     private fun buildKeys(t: KbTheme): View {
-        val lay = Layouts.get(this, if (mode == Mode.SYM) "sym" else lang)
+        val id = if (mode == Mode.SYM) (if (symPage == 0) "sym" else "sym2") else lang
+        val lay = Layouts.get(this, id)
         val col = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL; setPadding(dp(3), dp(4), dp(3), dp(4))
         }
-        lay.rows.forEach { row ->
+        lay.rows.forEachIndexed { i, row ->
+            val isNum = i == 0
+            val last = i == lay.rows.size - 1
             val r = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL
                 layoutDirection = if (lay.rtl) View.LAYOUT_DIRECTION_RTL else View.LAYOUT_DIRECTION_LTR
             }
-            row.forEach { r.addView(letterKey(it, t, lay)) }
-            col.addView(r, LinearLayout.LayoutParams(-1, rowH()))
+            // ردیف راست‌به‌چپ: اولین فرزند سمت راست است (حذف راست، شیفت چپ)
+            if (last && lay.side) r.addView(if (lay.rtl) backKey(t) else leftKey(t, lay))
+            row.forEach { r.addView(letterKey(it, t, lay, isNum)) }
+            if (last && lay.side) r.addView(if (lay.rtl) leftKey(t, lay) else backKey(t))
+            col.addView(r, LinearLayout.LayoutParams(-1, if (isNum) rowH() * 8 / 10 else rowH()))
         }
         col.addView(bottomRow(t, lay), LinearLayout.LayoutParams(-1, rowH()))
         return col
+    }
+
+    private fun backKey(t: KbTheme): View {
+        val bk = cell(1.4f, t)
+        bk.addView(TextView(this).apply { text = "⌫"; textSize = 22f; setTextColor(t.text); gravity = Gravity.CENTER })
+        attachRepeat(bk, handler) { backspace() }
+        return bk
+    }
+
+    /** کلید چپ ردیف سوم: شیفت / حالت حرکت‌گذاری / صفحه‌ی نشانه‌ها */
+    private fun leftKey(t: KbTheme, lay: Layout): View {
+        val rtlKeys = lay.rtl && mode == Mode.KEYS
+        val sh = cell(1.4f, t)
+        val tv = TextView(this).apply { textSize = 22f; gravity = Gravity.CENTER; setTextColor(t.border) }
+        fun paint() {
+            when {
+                mode == Mode.SYM -> { tv.text = if (symPage == 0) "۱/۲" else "۲/۲"; tv.textSize = 15f; tv.setTextColor(t.v1) }
+                rtlKeys -> {
+                    tv.text = if (harakat == 0) "⇧" else "⇧\nـ" + marks[harakat]
+                    tv.textSize = if (harakat == 0) 22f else 15f
+                    tv.setTextColor(if (harakat == 0) t.border else intArrayOf(0, t.v1, t.v2, t.v3)[harakat])
+                }
+                else -> { tv.text = "⇧"; tv.setTextColor(if (shift) t.v1 else t.border) }
+            }
+        }
+        paint(); sh.addView(tv)
+        sh.setOnClickListener {
+            feedback(it)
+            when {
+                mode == Mode.SYM -> { symPage = 1 - symPage; fillContent() }
+                rtlKeys -> { harakat = (harakat + 1) % 4; paint() }
+                else -> { shift = !shift; fillContent() }
+            }
+        }
+        return sh
     }
 
     private fun bottomRow(t: KbTheme, lay: Layout): View {
         val r = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; layoutDirection = View.LAYOUT_DIRECTION_LTR }
         val rtlKeys = lay.rtl && mode == Mode.KEYS
 
-        // شیفت: در زبان‌های راست‌به‌چپ = حالت حرکت‌گذاری (فتحه/کسره/ضمه)، در انگلیسی = حروف بزرگ
-        val sh = cell(1.2f, t)
-        val shTv = TextView(this).apply { textSize = 22f; gravity = Gravity.CENTER; setTextColor(t.border) }
-        fun paintShift() {
-            when {
-                mode == Mode.SYM -> { shTv.text = "ابج"; shTv.textSize = 15f; shTv.setTextColor(t.v1) }
-                rtlKeys -> {
-                    shTv.text = if (harakat == 0) "⇧" else "⇧\nـ" + marks[harakat]
-                    shTv.textSize = if (harakat == 0) 22f else 15f
-                    shTv.setTextColor(if (harakat == 0) t.border else intArrayOf(0, t.v1, t.v2, t.v3)[harakat])
-                }
-                else -> { shTv.text = "⇧"; shTv.setTextColor(if (shift) t.v1 else t.border) }
-            }
-        }
-        paintShift(); sh.addView(shTv)
-        sh.setOnClickListener {
+        val md = cell(1.4f, t)
+        md.addView(TextView(this).apply {
+            text = if (mode == Mode.SYM) "ابج" else "!#۱"; textSize = 15f; setTextColor(t.v1); gravity = Gravity.CENTER
+        })
+        md.setOnClickListener {
             feedback(it)
-            when {
-                mode == Mode.SYM -> { mode = Mode.KEYS; fillContent() }
-                rtlKeys -> { harakat = (harakat + 1) % 4; paintShift() }
-                else -> { shift = !shift; paintShift() }
-            }
+            if (mode == Mode.SYM) mode = Mode.KEYS else { mode = Mode.SYM; symPage = 0 }
+            fillContent()
         }
-        r.addView(sh)
+        r.addView(md)
 
-        val gl = cell(1.2f, t)
+        val gl = cell(1.0f, t)
         gl.addView(TextView(this).apply { text = "🌐"; textSize = 20f; gravity = Gravity.CENTER })
         gl.setOnClickListener {
             feedback(it)
-            lang = langs[(langs.indexOf(lang) + 1) % langs.size]; mode = Mode.KEYS; shift = false; harakat = 0
+            val order = listOf("hazaragi", "fa", "en", "ar")
+            lang = order[(order.indexOf(lang) + 1) % order.size]; mode = Mode.KEYS; shift = false; harakat = 0
             rebuild()
         }
         r.addView(gl)
 
+        val cm = cell(0.9f, t)
+        val comma = if (lay.rtl) "،" else ","
+        cm.addView(TextView(this).apply { text = comma; textSize = 22f; setTextColor(t.text); gravity = Gravity.CENTER })
+        cm.setOnClickListener { feedback(it); commit(comma) }
+        r.addView(cm)
+
         // کلید کشیده‌نویسی (تطویل): با نگه‌داشتن، «ـ» پشت‌سرهم اضافه می‌شود → سـ‌ـ‌ـلام
-        val ks = cell(1.2f, t)
-        val kTxt = if (rtlKeys) "ـــ" else "."
-        ks.addView(TextView(this).apply { text = kTxt; textSize = 22f; setTextColor(t.v1); gravity = Gravity.CENTER; typeface = Typeface.DEFAULT_BOLD })
         if (rtlKeys) {
+            val ks = cell(1.1f, t)
+            ks.addView(TextView(this).apply { text = "ـــ"; textSize = 22f; setTextColor(t.v1); gravity = Gravity.CENTER; typeface = Typeface.DEFAULT_BOLD })
             ks.addView(TextView(this).apply { text = "کشیده"; textSize = 9f; setTextColor(t.text); gravity = Gravity.CENTER })
             attachRepeat(ks, handler) { commit("\u0640") }
-        } else ks.setOnClickListener { feedback(it); commit(".") }
-        r.addView(ks)
+            r.addView(ks)
+        }
 
-        val sp = cell(4.2f, t)
+        val sp = cell(if (rtlKeys) 3.0f else 4.1f, t)
         if (t.useImages) sp.setBackgroundResource(R.drawable.hk_space)
         else sp.addView(TextView(this).apply { text = lay.name; textSize = 14f; setTextColor(t.text); gravity = Gravity.CENTER })
         sp.setOnClickListener { feedback(it); commit(" ") }
         r.addView(sp)
 
-        val bk = cell(1.4f, t)
-        bk.addView(TextView(this).apply { text = "⌫"; textSize = 22f; setTextColor(t.text); gravity = Gravity.CENTER })
-        attachRepeat(bk, handler) { backspace() }
-        r.addView(bk)
+        val pd = cell(0.9f, t)
+        pd.addView(TextView(this).apply { text = "."; textSize = 24f; setTextColor(t.text); gravity = Gravity.CENTER })
+        pd.setOnClickListener { feedback(it); commit(".") }
+        r.addView(pd)
 
         val en = cell(1.4f, t)
         en.addView(TextView(this).apply { text = "↵"; textSize = 24f; setTextColor(t.v2); gravity = Gravity.CENTER })
@@ -197,11 +232,17 @@ class HazaragiIME : InputMethodService() {
         return r
     }
 
-    private fun letterKey(k: KeyDef, t: KbTheme, lay: Layout): View {
-        val c = cell(1f, t)
+    private fun letterKey(k: KeyDef, t: KbTheme, lay: Layout, isNum: Boolean): View {
+        val w = FrameLayout(this).apply {
+            layoutParams = LinearLayout.LayoutParams(0, -1, 1f).apply { setMargins(dp(2), dp(2), dp(2), dp(2)) }
+            background = keyBg(t)
+        }
+        val c = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER }
+        w.addView(c, FrameLayout.LayoutParams(-1, -1))
         val label = if (shift && !lay.rtl) k.label.uppercase() else k.label
         c.addView(TextView(this).apply {
-            text = label; textSize = 23f; setTextColor(t.text); gravity = Gravity.CENTER; typeface = Typeface.DEFAULT_BOLD
+            text = label; textSize = if (isNum) 19f else 23f; setTextColor(t.text); gravity = Gravity.CENTER
+            typeface = Typeface.DEFAULT_BOLD
         })
         if (k.variants.isNotEmpty()) {
             val cols = intArrayOf(t.v1, t.v2, t.v3)
@@ -214,13 +255,18 @@ class HazaragiIME : InputMethodService() {
             }
             c.addView(TextView(this).apply { text = sb; textSize = 12f; gravity = Gravity.CENTER; maxLines = 1 })
         }
+        if (k.extras.isNotEmpty()) {
+            // نشانه‌ی حرف پنهان (مثل ض روی ص) در گوشه‌ی کلید؛ با نگه‌داشتن باز می‌شود
+            w.addView(TextView(this).apply { text = k.extras[0]; textSize = 10f; setTextColor(t.v2) },
+                FrameLayout.LayoutParams(-2, -2, Gravity.TOP or Gravity.LEFT).apply { setMargins(dp(4), dp(1), 0, 0) })
+        }
         var longPressed = false
         val lp = Runnable {
             longPressed = true
-            c.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
-            if (k.variants.isNotEmpty()) showVariants(c, k, t)
+            w.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+            if (k.variants.isNotEmpty() || k.extras.isNotEmpty()) showVariants(w, k, t)
         }
-        c.setOnTouchListener { v, e ->
+        w.setOnTouchListener { v, e ->
             when (e.action) {
                 MotionEvent.ACTION_DOWN -> {
                     longPressed = false
@@ -232,7 +278,7 @@ class HazaragiIME : InputMethodService() {
                     v.scaleX = 1f; v.scaleY = 1f; v.alpha = 1f; handler.removeCallbacks(lp)
                     if (!longPressed) {
                         feedback(v)
-                        val s = if (lay.rtl && mode == Mode.KEYS) label + marks[harakat] else label
+                        val s = if (lay.rtl && mode == Mode.KEYS && !isNum) label + marks[harakat] else label
                         commit(s)
                         if (shift && !lay.rtl) { shift = false; fillContent() }
                     }
@@ -241,24 +287,33 @@ class HazaragiIME : InputMethodService() {
             }
             true
         }
-        return c
+        return w
     }
 
-    /** نگه‌داشتن کلید: حرف ساده + فتحه + کسره + ضمه */
+    /** نگه‌داشتن کلید: حرف ساده + فتحه + کسره + ضمه، و ردیف جدا برای حرف‌های پنهان (ض، غ، ظ، ژ، ذ، آ، ئ ...) */
     private fun showVariants(anchor: View, k: KeyDef, t: KbTheme) {
         val b = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL; layoutDirection = View.LAYOUT_DIRECTION_RTL
+            orientation = LinearLayout.VERTICAL
             background = GradientDrawable().apply { cornerRadius = dp(12).toFloat(); setColor(t.bg); setStroke(dp(1), t.border) }
         }
-        val pw = PopupWindow(b, ViewGroup.LayoutParams.WRAP_CONTENT, dp(64), true)
-        (listOf(k.label) + k.variants).forEach { s ->
-            b.addView(TextView(this).apply {
-                text = s; textSize = 28f; setTextColor(t.text); gravity = Gravity.CENTER
-                setPadding(dp(14), 0, dp(14), 0)
-                setOnClickListener { commit(s); pw.dismiss() }
-            })
+        val pw = PopupWindow(b, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true)
+        val withMarks = k.variants.isNotEmpty()
+        val rows = ArrayList<List<String>>()
+        rows.add(listOf(k.label) + k.variants)
+        k.extras.forEach { e -> rows.add(if (withMarks) listOf(e, e + marks[1], e + marks[2], e + marks[3]) else listOf(e)) }
+        rows.forEach { items ->
+            val r = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; layoutDirection = View.LAYOUT_DIRECTION_RTL }
+            items.forEach { s ->
+                r.addView(TextView(this).apply {
+                    text = s; textSize = 26f; setTextColor(t.text); gravity = Gravity.CENTER
+                    setPadding(dp(12), dp(6), dp(12), dp(6))
+                    setOnClickListener { commit(s); pw.dismiss() }
+                })
+            }
+            b.addView(r)
         }
-        pw.showAsDropDown(anchor, 0, -(anchor.height + dp(64)))
+        val h = dp(52) * rows.size + dp(8)
+        pw.showAsDropDown(anchor, 0, -(anchor.height + h))
     }
 
     private fun langBar(t: KbTheme): View {

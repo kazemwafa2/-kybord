@@ -43,9 +43,9 @@ class SettingsActivity : Activity() {
 
         col.addView(title("ارتفاع کلیدها"))
         col.addView(SeekBar(this).apply {
-            max = 32; progress = Prefs.height(context) - 40
+            max = 32; progress = Prefs.height(context) - 36
             setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(s: SeekBar?, p: Int, u: Boolean) { Prefs.setHeight(context, 40 + p) }
+                override fun onProgressChanged(s: SeekBar?, p: Int, u: Boolean) { Prefs.setHeight(context, 36 + p) }
                 override fun onStartTrackingTouch(s: SeekBar?) {}
                 override fun onStopTrackingTouch(s: SeekBar?) {}
             })
