@@ -6,7 +6,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Typeface
+import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.InsetDrawable
 import android.inputmethodservice.InputMethodService
 import android.media.AudioManager
 import android.os.Handler
@@ -30,6 +32,7 @@ import android.text.TextUtils
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.FileProvider
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.inputmethod.EditorInfoCompat
 import androidx.core.widget.TextViewCompat
 import androidx.core.view.inputmethod.InputConnectionCompat
@@ -78,10 +81,13 @@ class HazaragiIME : InputMethodService() {
     }
 
     private fun readClip() {
+        // همه‌ی بخش‌های کلیپ خوانده می‌شود (نه فقط بخش اول) و سقف کوتاه‌کننده‌ای وجود ندارد
         val text = try {
-            cm?.primaryClip?.takeIf { it.itemCount > 0 }?.getItemAt(0)?.coerceToText(this)?.toString()
+            val clip = cm?.primaryClip
+            if (clip == null || clip.itemCount == 0) null
+            else (0 until clip.itemCount).joinToString("\n") { clip.getItemAt(it).coerceToText(this)?.toString() ?: "" }
         } catch (_: Exception) { null }
-        if (text.isNullOrBlank() || text.length > 20000) return
+        if (text.isNullOrBlank()) return
         if (clipHistory.firstOrNull() == text) return
         clipHistory.remove(text)
         clipHistory.add(0, text)
@@ -104,7 +110,7 @@ class HazaragiIME : InputMethodService() {
         bar.visibility = if (show) View.VISIBLE else View.GONE
         if (show && cur != null) {
             val link = cur.startsWith("http", true) || cur.startsWith("www.", true)
-            clipLabel?.text = (if (link) "🔗  " else "📋  ") + cur.replace("\n", " ")
+            clipLabel?.text = (if (link) "🔗  " else "📋  ") + cur.take(160).replace("\n", " ")
         }
     }
 
@@ -153,7 +159,7 @@ class HazaragiIME : InputMethodService() {
         }
         clipHistory.forEach { item ->
             list.addView(TextView(this).apply {
-                text = item; maxLines = 2; ellipsize = TextUtils.TruncateAt.END; textSize = 14f; setTextColor(t.text)
+                text = item.take(300); maxLines = 2; ellipsize = TextUtils.TruncateAt.END; textSize = 14f; setTextColor(t.text)
                 background = keyBg(t); setPadding(dp(10), dp(8), dp(10), dp(8))
                 layoutParams = LinearLayout.LayoutParams(-1, -2).apply { setMargins(0, dp(2), 0, dp(2)) }
                 setOnClickListener { commit(item); lastPasted = item; setMode(Mode.KEYS); refreshClipBar() }
@@ -163,7 +169,7 @@ class HazaragiIME : InputMethodService() {
         return col
     }
     private fun rowH() = dp(Prefs.height(this))
-    private fun keysHeight() = rowH() * 48 / 10 + dp(8)
+    private fun keysHeight() = rowH() * 48 / 10 + dp(4)
 
     override fun onEvaluateFullscreenMode() = false
 
@@ -177,6 +183,7 @@ class HazaragiIME : InputMethodService() {
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
         readClip()
+        UpdateChecker.autoCheckAsync(this)
         if (!restarting) { lang = "hazaragi"; mode = Mode.KEYS; shift = false; caps = false; harakat = 0 }
         if (root != null) rebuild()
     }
@@ -229,17 +236,21 @@ class HazaragiIME : InputMethodService() {
         return KeyBg(t.keyTop, t.keyBottom, t.border, dp(11).toFloat(), dp(if (t.useImages) 2 else 1).toFloat(), fancy)
     }
 
+    /** فاصله‌ی دیداری بین کلیدها: خود کلید کل خانه را می‌گیرد (ناحیه‌ی لمس کامل)، فقط ظاهرش داخل می‌نشیند */
+    private fun gap() = dp(Prefs.gap(this))
+    private fun insetKeyBg(t: KbTheme): Drawable = InsetDrawable(keyBg(t), gap())
+
     private fun cell(w: Float, t: KbTheme) = LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER
-        layoutParams = LinearLayout.LayoutParams(0, -1, w).apply { setMargins(dp(2), dp(2), dp(2), dp(2)) }
-        background = keyBg(t)
+        layoutParams = LinearLayout.LayoutParams(0, -1, w)
+        background = insetKeyBg(t)
     }
 
     private fun buildKeys(t: KbTheme): View {
         val id = if (mode == Mode.SYM) (if (symPage == 0) "sym" else "sym2") else lang
         val lay = Layouts.get(this, id)
         val col = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL; setPadding(dp(3), dp(4), dp(3), dp(4))
+            orientation = LinearLayout.VERTICAL; setPadding(dp(2), dp(2), dp(2), dp(2))
         }
         lay.rows.forEachIndexed { i, row ->
             val isNum = i == 0
@@ -260,7 +271,7 @@ class HazaragiIME : InputMethodService() {
 
     private fun backKey(t: KbTheme): View {
         val bk = cell(1.4f, t)
-        bk.addView(TextView(this).apply { text = "⌫"; textSize = 22f; setTextColor(t.text); gravity = Gravity.CENTER })
+        bk.addView(TextView(this).apply { text = "⌫"; textSize = 26f; setTextColor(t.text); gravity = Gravity.CENTER })
         attachRepeat(bk, handler) { backspace() }
         return bk
     }
@@ -269,13 +280,13 @@ class HazaragiIME : InputMethodService() {
     private fun leftKey(t: KbTheme, lay: Layout): View {
         val rtlKeys = lay.rtl && mode == Mode.KEYS
         val sh = cell(1.4f, t)
-        val tv = TextView(this).apply { textSize = 22f; gravity = Gravity.CENTER; setTextColor(t.border) }
+        val tv = TextView(this).apply { textSize = 26f; gravity = Gravity.CENTER; setTextColor(t.border) }
         fun paint() {
             when {
-                mode == Mode.SYM -> { tv.text = if (symPage == 0) "۱/۲" else "۲/۲"; tv.textSize = 15f; tv.setTextColor(t.v1) }
+                mode == Mode.SYM -> { tv.text = if (symPage == 0) "۱/۲" else "۲/۲"; tv.textSize = 17f; tv.setTextColor(t.v1) }
                 rtlKeys -> {
                     tv.text = if (harakat == 0) "⇧" else "⇧\nـ" + marks[harakat]
-                    tv.textSize = if (harakat == 0) 22f else 15f
+                    tv.textSize = if (harakat == 0) 26f else 17f
                     tv.setTextColor(if (harakat == 0) t.border else intArrayOf(0, t.v1, t.v2, t.v3)[harakat])
                 }
                 else -> { tv.text = if (caps) "⇪" else "⇧"; tv.setTextColor(if (caps) t.v2 else if (shift) t.v1 else t.border) }
@@ -306,7 +317,7 @@ class HazaragiIME : InputMethodService() {
 
         val md = cell(1.4f, t)
         md.addView(TextView(this).apply {
-            text = if (mode == Mode.SYM) "ابج" else "!#۱"; textSize = 15f; setTextColor(t.v1); gravity = Gravity.CENTER
+            text = if (mode == Mode.SYM) "ابج" else "!#۱"; textSize = 18f; setTextColor(t.v1); gravity = Gravity.CENTER
         })
         md.setOnClickListener {
             feedback(it)
@@ -316,7 +327,7 @@ class HazaragiIME : InputMethodService() {
         r.addView(md)
 
         val gl = cell(1.0f, t)
-        gl.addView(TextView(this).apply { text = "🌐"; textSize = 20f; gravity = Gravity.CENTER })
+        gl.addView(TextView(this).apply { text = "🌐"; textSize = 24f; gravity = Gravity.CENTER })
         gl.setOnClickListener {
             feedback(it)
             val order = listOf("hazaragi", "fa", "en", "ar")
@@ -327,32 +338,35 @@ class HazaragiIME : InputMethodService() {
 
         val cm = cell(0.9f, t)
         val comma = if (lay.rtl) "،" else ","
-        cm.addView(TextView(this).apply { text = comma; textSize = 22f; setTextColor(t.text); gravity = Gravity.CENTER })
+        cm.addView(TextView(this).apply { text = comma; textSize = 28f; setTextColor(t.text); gravity = Gravity.CENTER })
         cm.setOnClickListener { feedback(it); commit(comma) }
         r.addView(cm)
 
         val sp = cell(if (rtlKeys) 3.4f else 4.5f, t)
-        if (t.useImages) sp.setBackgroundResource(R.drawable.hk_space)
-        else sp.addView(TextView(this).apply { text = lay.name; textSize = 14f; setTextColor(t.text); gravity = Gravity.CENTER })
+        if (t.useImages) {
+            val img = ResourcesCompat.getDrawable(resources, R.drawable.hk_space, null)
+            if (img != null) sp.background = InsetDrawable(img, gap())
+        }
+        else sp.addView(TextView(this).apply { text = lay.name; textSize = 16f; setTextColor(t.text); gravity = Gravity.CENTER })
         sp.setOnClickListener { feedback(it); commit(" ") }
         r.addView(sp)
 
         // کلید کشیده‌نویسی (تطویل): با نگه‌داشتن، «ـ» پشت‌سرهم اضافه می‌شود → سـ‌ـ‌ـلام
         if (rtlKeys) {
             val ks = cell(1.1f, t)
-            ks.addView(TextView(this).apply { text = "ـــ"; textSize = 22f; setTextColor(t.v1); gravity = Gravity.CENTER; typeface = Typeface.DEFAULT_BOLD })
-            ks.addView(TextView(this).apply { text = "کشیده"; textSize = 9f; setTextColor(t.text); gravity = Gravity.CENTER })
+            ks.addView(TextView(this).apply { text = "ـــ"; textSize = 26f; setTextColor(t.v1); gravity = Gravity.CENTER; typeface = Typeface.DEFAULT_BOLD })
+            ks.addView(TextView(this).apply { text = "کشیده"; textSize = 10f; setTextColor(t.text); gravity = Gravity.CENTER })
             attachRepeat(ks, handler) { commit("\u0640") }
             r.addView(ks)
         }
 
         val pd = cell(0.9f, t)
-        pd.addView(TextView(this).apply { text = "."; textSize = 24f; setTextColor(t.text); gravity = Gravity.CENTER })
+        pd.addView(TextView(this).apply { text = "."; textSize = 30f; setTextColor(t.text); gravity = Gravity.CENTER })
         pd.setOnClickListener { feedback(it); commit(".") }
         r.addView(pd)
 
         val en = cell(1.4f, t)
-        en.addView(TextView(this).apply { text = "↵"; textSize = 24f; setTextColor(t.v2); gravity = Gravity.CENTER })
+        en.addView(TextView(this).apply { text = "↵"; textSize = 28f; setTextColor(t.v2); gravity = Gravity.CENTER })
         en.setOnClickListener { feedback(it); enter() }
         r.addView(en)
         return r
@@ -360,15 +374,15 @@ class HazaragiIME : InputMethodService() {
 
     private fun letterKey(k: KeyDef, t: KbTheme, lay: Layout, isNum: Boolean): View {
         val w = FrameLayout(this).apply {
-            layoutParams = LinearLayout.LayoutParams(0, -1, 1f).apply { setMargins(dp(2), dp(2), dp(2), dp(2)) }
-            background = keyBg(t)
+            layoutParams = LinearLayout.LayoutParams(0, -1, 1f)
+            background = insetKeyBg(t)
         }
         val c = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER }
         w.addView(c, FrameLayout.LayoutParams(-1, -1))
         val label = if (shift && !lay.rtl) k.label.uppercase(java.util.Locale.ENGLISH) else k.label
         c.addView(TextView(this).apply {
-            text = label; textSize = if (isNum) 19f else 21f; setTextColor(t.text); gravity = Gravity.CENTER
-            typeface = Typeface.DEFAULT_BOLD
+            text = label; textSize = if (isNum) 22f else 26f; setTextColor(t.text); gravity = Gravity.CENTER
+            typeface = Typeface.DEFAULT_BOLD; includeFontPadding = false
         })
         if (k.variants.isNotEmpty() && !isNum) {
             val cols = intArrayOf(t.v1, t.v2, t.v3)
@@ -382,16 +396,16 @@ class HazaragiIME : InputMethodService() {
             val tv = TextView(this).apply {
                 text = sb; maxLines = 1; gravity = Gravity.CENTER
                 typeface = Typeface.DEFAULT_BOLD
-                setPadding(dp(1), 0, dp(1), 0)
+                setPadding(dp(1), 0, dp(1), 0); includeFontPadding = false
                 layoutParams = LinearLayout.LayoutParams(-1, -2)
             }
-            TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(tv, 7, 13, 1, TypedValue.COMPLEX_UNIT_SP)
+            TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(tv, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
             c.addView(tv)
         }
         if (k.extras.isNotEmpty() && !isNum) {
             // نشانه‌ی حرف پنهان (مثل ض روی ص) در گوشه‌ی کلید؛ با نگه‌داشتن باز می‌شود
-            w.addView(TextView(this).apply { text = k.extras[0]; textSize = 11f; setTextColor(t.v2) },
-                FrameLayout.LayoutParams(-2, -2, Gravity.TOP or Gravity.LEFT).apply { setMargins(dp(4), dp(1), 0, 0) })
+            w.addView(TextView(this).apply { text = k.extras[0]; textSize = 12f; setTextColor(t.v2); includeFontPadding = false },
+                FrameLayout.LayoutParams(-2, -2, Gravity.TOP or Gravity.LEFT).apply { setMargins(gap() + dp(3), gap() + dp(1), 0, 0) })
         }
         var longPressed = false
         val lp = Runnable {
@@ -407,9 +421,15 @@ class HazaragiIME : InputMethodService() {
                     v.alpha = 0.7f
                     handler.postDelayed(lp, 380)
                 }
+                MotionEvent.ACTION_MOVE -> {
+                    if (e.x < 0 || e.y < 0 || e.x > v.width || e.y > v.height) {
+                        v.scaleX = 1f; v.scaleY = 1f; v.alpha = 1f; handler.removeCallbacks(lp)
+                    }
+                }
                 MotionEvent.ACTION_UP -> {
                     v.scaleX = 1f; v.scaleY = 1f; v.alpha = 1f; handler.removeCallbacks(lp)
-                    if (!longPressed) {
+                    val inside = e.x >= 0 && e.y >= 0 && e.x <= v.width && e.y <= v.height
+                    if (!longPressed && inside) {
                         feedback(v)
                         val s = if (lay.rtl && mode == Mode.KEYS && !isNum) label + marks[harakat] else label
                         commit(s)
@@ -455,7 +475,7 @@ class HazaragiIME : InputMethodService() {
             gravity = Gravity.CENTER_VERTICAL; setPadding(dp(4), dp(2), dp(4), dp(2))
         }
         fun chip(txt: String, w: Float, active: Boolean, act: (View) -> Unit) = TextView(this).apply {
-            text = txt; textSize = 13f; gravity = Gravity.CENTER; setTextColor(t.text)
+            text = txt; textSize = 14f; gravity = Gravity.CENTER; setTextColor(t.text)
             layoutParams = LinearLayout.LayoutParams(0, -1, w).apply { setMargins(dp(2), dp(1), dp(2), dp(1)) }
             background = GradientDrawable().apply {
                 cornerRadius = dp(18).toFloat(); setColor(if (active) t.keyTop else 0x00000000)
@@ -464,7 +484,9 @@ class HazaragiIME : InputMethodService() {
             setOnClickListener { act(it) }
         }
         fun pick(l: String) { lang = l; mode = Mode.KEYS; shift = false; caps = false; harakat = 0; rebuild() }
-        bar.addView(chip("⚙\nتنظیمات", 1.2f, false) { openSettings() }.apply { textSize = 11f })
+        val upd = UpdateChecker.pendingVersion(this)
+        if (upd == null) bar.addView(chip("⚙\nتنظیمات", 1.2f, false) { openSettings() }.apply { textSize = 11f })
+        else bar.addView(chip("⬆ نسخه جدید\n" + upd, 1.2f, false) { openSettings(true) }.apply { textSize = 10f; setTextColor(t.v1) })
         bar.addView(chip("🌐 Hazaragi ▾", 2.1f, lang == "hazaragi") { pick("hazaragi") })
         bar.addView(chip("فارسی 🇮🇷", 1.5f, lang == "fa") { pick("fa") })
         bar.addView(chip("English 🇬🇧", 1.6f, lang == "en") { pick("en") })
@@ -506,8 +528,16 @@ class HazaragiIME : InputMethodService() {
         if (Prefs.sound(this)) (getSystemService(Context.AUDIO_SERVICE) as AudioManager).playSoundEffect(AudioManager.FX_KEYPRESS_STANDARD)
     }
 
+    /** متن طولانی را تکه‌تکه و در یک ویرایش یکپارچه می‌فرستد تا هیچ بخشی گم نشود */
+    private fun commitText(s: String) {
+        val ic = currentInputConnection ?: return
+        if (s.length <= 4000) { ic.commitText(s, 1); return }
+        ic.beginBatchEdit()
+        try { for (part in chunkText(s, 4000)) ic.commitText(part, 1) } finally { ic.endBatchEdit() }
+    }
+
     private fun commit(s: String) {
-        currentInputConnection?.commitText(s, 1); updatePreview()
+        commitText(s); updatePreview()
         if (clipBar?.visibility == View.VISIBLE) { lastPasted = clipHistory.firstOrNull(); refreshClipBar() }
     }
 
@@ -550,7 +580,7 @@ class HazaragiIME : InputMethodService() {
         InputConnectionCompat.commitContent(ic, info, content, InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION, null)
     }
 
-    private fun openSettings() {
-        startActivity(Intent(this, SettingsActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+    private fun openSettings(showUpdate: Boolean = false) {
+        startActivity(Intent(this, SettingsActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("update", showUpdate))
     }
 }

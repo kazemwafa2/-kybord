@@ -51,7 +51,7 @@ class ImageHeader(
     ctx: Context, handler: Handler,
     onEmoji: () -> Unit, onBack: () -> Unit, onSend: () -> Unit
 ) : Header {
-    private val frame = RatioFrame(ctx, 1536, 285)
+    private val frame = RatioFrame(ctx, 1312, 322)   // ابعاد تصویر سربرگ طرح جدید
     private val tv = TextView(ctx)
     override val view: View get() = frame
 
@@ -60,15 +60,17 @@ class ImageHeader(
             setImageResource(R.drawable.hk_header); scaleType = ImageView.ScaleType.FIT_XY
         })
         tv.apply {
-            textSize = 15f; setTextColor(Color.WHITE); maxLines = 1
+            textSize = 16f; setTextColor(Color.WHITE); maxLines = 1
+            hint = "به هزارگی بنویسید ..."; setHintTextColor(0xFF8FA3D1.toInt())
             ellipsize = TextUtils.TruncateAt.START
             layoutDirection = View.LAYOUT_DIRECTION_RTL
             gravity = Gravity.CENTER_VERTICAL or Gravity.END
         }
-        frame.addAt(tv, 150, 219, 650, 272)
-        frame.addAt(View(ctx).apply { setOnClickListener { onEmoji() } }, 25, 192, 135, 282)
-        frame.addAt(View(ctx).also { attachRepeat(it, handler) { onBack() } }, 1295, 190, 1400, 282)
-        frame.addAt(View(ctx).apply { setOnClickListener { onSend() } }, 1410, 186, 1518, 282)
+        // مختصات روی تصویر 1312×322: نوشته‌ی پیش‌نمایش، لبخند، حذف، ارسال
+        frame.addAt(tv, 170, 244, 905, 312)
+        frame.addAt(View(ctx).apply { setOnClickListener { onEmoji() } }, 36, 238, 140, 316)
+        frame.addAt(View(ctx).also { attachRepeat(it, handler) { onBack() } }, 1148, 238, 1224, 316)
+        frame.addAt(View(ctx).apply { setOnClickListener { onSend() } }, 1226, 238, 1302, 316)
     }
     override fun setPreview(s: String) { tv.text = s }
 }
@@ -98,6 +100,7 @@ class PlainHeader(
         row.addView(btn("😊").apply { setOnClickListener { onEmoji() } })
         tv.apply {
             textSize = 15f; setTextColor(t.text); maxLines = 1
+            hint = "به هزارگی بنویسید ..."; setHintTextColor(t.border)
             ellipsize = TextUtils.TruncateAt.START
             layoutDirection = View.LAYOUT_DIRECTION_RTL
             gravity = Gravity.CENTER_VERTICAL or Gravity.END
@@ -113,12 +116,9 @@ class PlainHeader(
 fun makeFooter(ctx: Context, t: KbTheme, image: Boolean, onPick: (String) -> Unit): View {
     val items = listOf("❤️", "💙", "🏔️", "🌸", "🕌")
     if (image) {
-        val f = RatioFrame(ctx, 1536, 106)
+        // طرح جدید: نوار تزئینی بدون آیکون؛ فقط تصویر
+        val f = RatioFrame(ctx, 1312, 66)
         f.addView(ImageView(ctx).apply { setImageResource(R.drawable.hk_footer); scaleType = ImageView.ScaleType.FIT_XY })
-        val cx = listOf(1265, 1315, 1367, 1418, 1470)
-        items.forEachIndexed { i, e ->
-            f.addAt(View(ctx).apply { setOnClickListener { onPick(e) } }, cx[i] - 26, 20, cx[i] + 26, 90)
-        }
         return f
     }
     val row = LinearLayout(ctx).apply {

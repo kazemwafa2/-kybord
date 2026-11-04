@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- فقط برای بررسی/دانلود نسخه‌ی جدید از GitHub؛ هیچ متنی که تایپ می‌کنید ارسال نمی‌شود -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- باز کردن نصب‌کننده‌ی رسمی اندروید برای نصب به‌روزرسانی (تأیید نهایی با خود کاربر است) -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
     <application
         android:label="کیبورد هزارگی"
         android:icon="@drawable/ic_launcher"
@@ -20,6 +26,7 @@
         <activity
             android:name=".SettingsActivity"
             android:label="هزارگی"
+            android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
